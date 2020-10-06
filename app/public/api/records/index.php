@@ -6,13 +6,13 @@ require 'common.php';
 $db = DbConnection::getConnection();
 
 // Step 2: Create & run the query
-$sql = 'SELECT * FROM Patient';
+$sql = 'SELECT * FROM PatientVisit pv, Patient p WHERE pv.patientGuid = p.patientGuid';
 $vars = [];
 
-if (isset($_GET['guid'])) {
-  $sql = 'SELECT * FROM Patient WHERE patientGuid = ?';
-  $vars = [ $_GET['guid'] ];
-}
+// if (isset($_GET['guid'])) {
+// $sql = 'SELECT * FROM Patient WHERE patientGuid = ?';
+//  $vars = [ $_GET['guid'] ];
+// }
 
 $stmt = $db->prepare($sql);
 $stmt->execute($vars);

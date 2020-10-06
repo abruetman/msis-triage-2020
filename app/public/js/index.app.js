@@ -1,61 +1,68 @@
 var app = new Vue({
-    el: '#triagePage',
-    data: {
-      ptList: [],
-      activePt: null,
-      triageForm: {
-        priority: null,
-        symptoms: ''
-      },
-      newPtForm: {}
+  el: '#triagePage',
+  data: {
+    ptList: [],
+    activePt: null,
+    triageForm: {
+      priority: null,
+      symptoms: ''
     },
-    computed: {
-      activePtName() {
-        return this.activePt ? this.activePt.lastName + ', ' + this.activePt.firstName : ''
+    newPtForm: {}
+  },
+  computed: {
+    activePtName() {
+      return this.activePt ? this.activePt.lastName + ', ' + this.activePt.firstName : ''
+    }
+  },
+  methods: {
+    newPtData() {
+      return {
+        firstName: "",
+        lastName: "",
+        dob: "",
+        sexAtBirth: ""
       }
     },
-    methods: {
-      newPtData() {
-        return {
-          firstName: "",
-          lastName: "",
-          dob: "",
-          sexAtBirth: ""
+    handleNewPtForm( evt ) {
+      // evt.preventDefault();  // Redundant w/ Vue's submit.prevent
+
+      // TODO: Validate the data!
+
+      fetch('api/records/post.php', {
+        method:'POST',
+        body: JSON.stringify(this.newPtForm),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8"
         }
-      },
-      handleNewPtForm( evt ){
-        evt.preventDefault();  // Redundant w/ Vue's submit.prevent
-        /*
-        //TODO: Hook to API
-        fetch( url, {
-         method: "post",
-         data: data
-        })
-        */
-  
-        console.log("Creating...!");
-        console.log(this.newPtForm);
-  
-        this.ptList.push(this.newPtForm);
-  
-        this.newPtForm = this.newPtData();
-      },
-      handleTriageForm( evt ) {
-        console.log("Form submitted!");
-  
-        this.triageForm.pt = this.activePt;
-        console.log(this.triageForm);
-  
-      }
-    },
-    created() {
-      fetch("dummy/pt-list.php")
+      })
       .then( response => response.json() )
       .then( json => {
-        this.ptList = json;
-  
-        console.log(json)}
-      );
+        console.log("Returned from post:", json);
+        // TODO: test a result was returned!
+        this.ptList.push(json[0]);
+      });
+
+      console.log("Creating (POSTing)...!");
+      console.log(this.newPtForm);
+
       this.newPtForm = this.newPtData();
+    },
+    handleTriageForm( evt ) {
+      console.log("Form submitted!");
+
+      this.triageForm.pt = this.activePt;
+      console.log(this.triageForm);
+
     }
-  })
+  },
+  created() {
+    fetch("api/visits/")
+    .then( response => response.json() )
+    .then( json => {
+      this.visitList = json;
+
+      console.log(json)}
+    );
+    this.newPtForm = this.newPtData();
+  }
+})

@@ -1,4 +1,4 @@
-USE triage;
+USE msis-test;
 
 CREATE TABLE Patient (
     patientGuid VARCHAR(64) PRIMARY KEY,
